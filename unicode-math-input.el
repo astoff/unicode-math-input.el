@@ -63,8 +63,8 @@ loaded.  Restart Emacs if needed."
   :type 'string)
 
 (defcustom unicode-math-input-min-prefix 2
-  "The minimum prefix length needed for a match.  This should be
-positive.  Any large value (≥ 25) is equivalent to disabling
+  "The minimum prefix length needed for a match.
+This should be positive.  Any large value (≥ 25) is equivalent to disabling
 prefix matching.
 
 Setting this variable has no effect after `unicode-math-input' is
@@ -72,15 +72,15 @@ loaded.  Restart Emacs if needed."
   :type 'integer)
 
 (defcustom unicode-math-input-deterministic nil
-  "If t, makes the input method deterministic, i.e., disables
-selection of partial matches with the numeric keys.
+  "If t, makes the input method deterministic.
+That is, disables selection of partial matches with the numeric
+keys.
 
 Setting this variable has no effect after `unicode-math-input' is
 loaded.  Restart Emacs if needed.")
 
 (defcustom unicode-math-browse-insert-tex nil
-  "If non-nil, the default action of `unicode-math-browse' is to
-insert the TeX command rather than the Unicode character."
+  "If non-nil, insert TeX commands rather than the Unicode characters."
   :type 'boolean)
 (make-variable-buffer-local 'unicode-math-browse-insert-tex)
 
