@@ -1,4 +1,4 @@
-;;; unicode-math-input.el --- Insert Unicode math symbols with Quail or Ivy
+;;; unicode-math-input.el --- Insert Unicode math symbols with Quail or Ivy -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018 Augusto Stoffel
 
