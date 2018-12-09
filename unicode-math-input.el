@@ -3,6 +3,7 @@
 ;; Copyright (C) 2018 Augusto Stoffel
 
 ;; Author: Augusto Stoffel
+;; URL: https://github.com/astoff/unicode-math-input.el
 ;; Package-Version: 0.1
 ;; Package-Requires: ((emacs "24.1") (ivy "0.10.0"))
 
