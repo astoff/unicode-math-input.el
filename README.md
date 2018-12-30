@@ -3,10 +3,10 @@
 This Emacs package provides two methods for inserting mathematical
 symbols:
 
-- The command `unicode-math-browse` to browse through all Unicode math
+- The command `unicode-math-input` to browse through all Unicode math
   symbols, with TeX names as specified by the
   [unicode-math](https://github.com/wspr/unicode-math/) LaTeX package.
-  This uses Ivy for searching and filtering.
+  This works best with Helm or Ivy mode for incremental filtering.
 
 - A proper input method for efficient typing.  Activate with `C-u C-\
   unicode-math RET`.  Then TeX commands (e.g., `\alpha`) are replaced
