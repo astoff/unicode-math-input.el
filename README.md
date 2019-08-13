@@ -1,3 +1,5 @@
+[![MELPA](http://melpa.org/packages/unicode-math-input-badge.svg)](http://melpa.org/#/unicode-math-input)
+
 # unicode-math-input.el
 
 This Emacs package provides two methods for inserting mathematical

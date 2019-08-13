@@ -326,6 +326,7 @@ loaded.  Restart Emacs if needed."
         ("Chi" . #x003A7)
         ("chi" . #x003C7)
         ("cirbot" . #x027DF)
+        ("circ" . #x02218)
         ("circeq" . #x02257)
         ("circlebottomhalfblack" . #x025D2)
         ("circledast" . #x0229B)
