@@ -67,8 +67,8 @@ loaded.  Restart Emacs if needed."
 
 (defcustom unicode-math-input-min-prefix 2
   "The minimum prefix length needed for a match.
-This should be positive.  Any large value (≥ 25) is equivalent to disabling
-prefix matching.
+This should be positive.  Any large value (≥ 25) is equivalent to
+disabling prefix matching.
 
 Setting this variable has no effect after `unicode-math-input' is
 loaded.  Restart Emacs if needed."
@@ -2624,22 +2624,16 @@ for a complete list of symbols."
  "unicode-math-input")
 
 (defcustom unicode-math-input-annotation
-  (propertize "%c" 'face 'font-lock-keyword-face 'column 30)
+  #(" %c" 0 1 (display (space :align-to 30)) 1 3 (face font-lock-keyword-face))
   "Annotation displayed in the `unicode-math-input' query.
 This is passed to `format' with the relevant character as an
-additional argument.  A `column' property in this string is used
-to suitably left-pad the annotation."
+additional argument."
   :type 'string)
 
 (defun unicode-math-input--annotate (item)
   "Annotation function used by `unicode-math-input'."
-  (concat
-   (make-string
-    (max 0 (- (or (get-text-property 0 'column unicode-math-input-annotation) 0)
-              (length item)))
-    ?\s)
-   (format unicode-math-input-annotation
-           (cdr (assoc item unicode-math-input-symbols)))))
+  (format unicode-math-input-annotation
+          (cdr (assoc item unicode-math-input-symbols))))
 
 ;;;###autoload
 (defun unicode-math-input (symbol)
