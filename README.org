@@ -8,8 +8,9 @@ This Emacs package provides two methods to insert mathematical symbols:
   unicode-math RET=.  Then TeX commands (e.g., =\alpha=) are replaced
   automatically as you type with the corresponding Unicode character.
 
-- A completing-read based command, =unicode-math-input=, which reads the
-  TeX name of a symbol and inserts the corresponding Unicode character.
+- An interactive command, =unicode-math-input=, which reads the TeX
+  name of a symbol with completion and inserts the corresponding
+  Unicode character.
 
 In either case, [[http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unimath-symbols.pdf][all symbols]] provided by the unicode-math LaTeX package
 are available, with the same names.
@@ -24,3 +25,13 @@ starting with a backslash, so it interferes less with normal typing.
 The input method is customizable; see =M-x customize-group RET
 unicode-math-input RET= for details (but note that, by the nature of
 input methods, any options must be set /before/ loading the package).
+
+Of particular note is the possibility to define some additional
+symbols by setting the variable =unicode-math-input-extra-symbols=.
+Here is an example:
+
+#+begin_src emacs-lisp
+  (setq unicode-math-input-extra-symbols
+        '(("frowny" . #x01F641) ; hex syntax...
+          ("smiley" . ?🙂)))    ; or character syntax
+#+end_src

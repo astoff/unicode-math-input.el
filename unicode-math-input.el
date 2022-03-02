@@ -93,6 +93,14 @@ This is passed to `format' with the relevant character as an
 additional argument."
   :type 'string)
 
+(defcustom unicode-math-input-extra-symbols nil
+  "Alist of user-defined symbols for `unicode-math-input'.
+Entries should be of the form (NAME . CHARACTER).
+
+You must set this variable before loading `unicode-math-input'
+for it to affect the input method."
+  :type '(alist :key-type string :value-type: character))
+
 ;; from unicode-math-table.tex
 (defvar unicode-math-input-symbols
   '(("accurrent" . #x023E6)
@@ -2620,7 +2628,8 @@ of symbols."
  nil nil unicode-math-input-deterministic)
 
 (let ((min-prefix (or unicode-math-input-min-prefix 1e+INF)))
-  (dolist (it (reverse unicode-math-input-symbols))
+  (dolist (it (reverse (append unicode-math-input-extra-symbols
+                               unicode-math-input-symbols)))
     (cl-loop with name = (car it)
              with len = (length name)
              for n from (min min-prefix len) to len
@@ -2640,7 +2649,8 @@ of symbols."
 (defun unicode-math-input--annotate (name)
   "Annotation function used by `unicode-math-input'."
   (format unicode-math-input-annotation
-          (cdr (assoc name unicode-math-input-symbols))))
+          (cdr (or (assoc name unicode-math-input-extra-symbols)
+                   (assoc name unicode-math-input-symbols)))))
 
 ;;;###autoload
 (defun unicode-math-input (name)
@@ -2648,8 +2658,12 @@ of symbols."
   (interactive (let ((completion-extra-properties
                       '(:annotation-function unicode-math-input--annotate)))
                  (list (completing-read "Math symbol: "
-                                        unicode-math-input-symbols nil t))))
-  (insert (cdr (assoc name unicode-math-input-symbols))))
+                                        (append unicode-math-input-extra-symbols
+                                                unicode-math-input-symbols)
+                                        nil t))))
+  (insert (cdr (or (assoc name unicode-math-input-extra-symbols)
+                   (assoc name unicode-math-input-symbols)
+                   (user-error "No symbol named `%s'") name))))
 
 (provide 'unicode-math-input)
 ;;; unicode-math-input.el ends here
