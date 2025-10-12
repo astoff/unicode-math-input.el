@@ -85,9 +85,7 @@ loaded.  Restart Emacs if needed."
   :type 'boolean)
 
 (defcustom unicode-math-input-annotation
-  #(" %c"
-    0 1 (display (space :align-to 30))
-    1 3 (face font-lock-keyword-face))
+  #(" %c" 1 3 (face font-lock-keyword-face))
   "Annotation displayed in the `unicode-math-input' query.
 This is passed to `format' with the relevant character as an
 additional argument."
@@ -2646,24 +2644,36 @@ of symbols."
  "Input math symbols in TeX notation."
  "unicode-math-input")
 
-(defun unicode-math-input--annotate (name)
-  "Annotation function used by `unicode-math-input'."
-  (format unicode-math-input-annotation
-          (cdr (or (assoc name unicode-math-input-extra-symbols)
-                   (assoc name unicode-math-input-symbols)))))
+(defun unicode-math-input--completion-table ()
+  "Completion table for `unicode-math-input'."
+  (let* ((cands (append unicode-math-input-extra-symbols
+                        unicode-math-input-symbols))
+         (metadata `((annotation-function . ,(lambda (name)
+                                               (format unicode-math-input-annotation
+                                                       (cdr (assoc name cands)))))
+                     (category . unicode-math-symbol))))
+    (lambda (string predicate action)
+      (if (eq action 'metadata)
+          `(metadata ,@metadata)
+        (complete-with-action action cands string predicate)))))
 
 ;;;###autoload
-(defun unicode-math-input (name)
-  "Insert the Unicode character with the given TeX NAME."
-  (interactive (let ((completion-extra-properties
-                      '(:annotation-function unicode-math-input--annotate)))
-                 (list (completing-read "Math symbol: "
-                                        (append unicode-math-input-extra-symbols
-                                                unicode-math-input-symbols)
-                                        nil t))))
-  (insert (cdr (or (assoc name unicode-math-input-extra-symbols)
-                   (assoc name unicode-math-input-symbols)
-                   (user-error "No symbol named `%s'") name))))
+(defun unicode-math-input (&optional name)
+  "Insert the Unicode character with the given TeX NAME.
+Can also be used as an item in `completion-at-point-functions'."
+  (interactive (list (completing-read "Insert math symbol: "
+                                      (unicode-math-input--completion-table)
+                                      nil t)))
+  (if name
+      (insert (cdr (or (assoc name unicode-math-input-extra-symbols)
+                       (assoc name unicode-math-input-symbols)
+                       (user-error "No symbol named `%s'" name))))
+    (when (thing-at-point-looking-at
+           (concat (regexp-quote unicode-math-input-escape)
+                   "\\([A-Za-z]+\\)"))
+      `(,(match-beginning 1) ,(match-end 1)
+        ,(unicode-math-input--completion-table)
+        :exclusive no))))
 
 (provide 'unicode-math-input)
 ;;; unicode-math-input.el ends here
