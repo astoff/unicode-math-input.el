@@ -2669,8 +2669,8 @@ Can also be used as an item in `completion-at-point-functions'."
                        (assoc name unicode-math-input-symbols)
                        (user-error "No symbol named `%s'" name))))
     (when (thing-at-point-looking-at
-           (concat (regexp-quote unicode-math-input-escape)
-                   "\\([A-Za-z]+\\)"))
+           (rx (literal unicode-math-input-escape)
+               (group (+ (any "A-Z" "a-z")))))
       `(,(match-beginning 1) ,(match-end 1)
         ,(unicode-math-input--completion-table)
         :exclusive no))))
