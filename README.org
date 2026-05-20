@@ -29,6 +29,8 @@ collection of characters, including various alphabets (Fraktur,
 calligraphic, etc.) and combining accents (note you have to type, say,
 =\pi\hat= to get π̂).  Second, it does not include any sequence not
 starting with a backslash, so it interferes less with normal typing.
+Super- and subscripts can be entered like this: =\^1= produces ¹,
+=\_2= produces ₂, etc.
 
 The input method is customizable; see =M-x customize-group RET
 unicode-math-input RET= for details (but note that, by the nature of

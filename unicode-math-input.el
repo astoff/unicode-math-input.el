@@ -2625,7 +2625,13 @@ Use the `unicode-math-input' command to display a complete list
 of symbols."
  nil nil unicode-math-input-deterministic)
 
-(let ((min-prefix (or unicode-math-input-min-prefix 1e+INF)))
+(dolist (i (number-sequence 0 9))
+  (quail-defrule (format "%s^%c" unicode-math-input-escape (+ ?0 i))
+                 (pcase i (1 ?¹) (2 ?²) (3 ?³) (_ (+ ?⁰ i))))
+  (quail-defrule (format "%s_%c" unicode-math-input-escape (+ ?0 i))
+                 (+ ?₀ i)))
+
+(let ((min-prefix (or unicode-math-input-min-prefix most-positive-fixnum)))
   (dolist (it (reverse (append unicode-math-input-extra-symbols
                                unicode-math-input-symbols)))
     (cl-loop with name = (car it)
