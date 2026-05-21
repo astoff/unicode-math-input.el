@@ -151,11 +151,14 @@ of symbols."
          (metadata `((annotation-function . ,(lambda (name)
                                                (format unicode-math-input-annotation
                                                        (cdr (assoc name cands)))))
-                     (category . unicode-math-symbol))))
+                     (category . unicode-math-input))))
     (lambda (string predicate action)
       (if (eq action 'metadata)
           `(metadata ,@metadata)
         (complete-with-action action cands string predicate)))))
+
+(defvar unicode-math-input--history nil
+  "History variable for `unicode-math-input'.")
 
 ;;;###autoload
 (defun unicode-math-input (&optional name)
@@ -163,7 +166,6 @@ of symbols."
 Can also be used as an item in `completion-at-point-functions'."
   (interactive (list (completing-read "Insert math symbol: "
                                       (unicode-math-input--completion-table)
-                                      nil t)))
   (if name
       (insert (cdr (or (assoc name unicode-math-input-extra-symbols)
                        (assoc name unicode-math-input-symbols)
@@ -174,6 +176,7 @@ Can also be used as an item in `completion-at-point-functions'."
       `(,(match-beginning 1) ,(match-end 1)
         ,(unicode-math-input--completion-table)
         :exclusive no))))
+                                      nil t nil 'unicode-math-input--history)))
 
 (provide 'unicode-math-input)
 ;;; unicode-math-input.el ends here
