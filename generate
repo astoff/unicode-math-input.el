@@ -1,0 +1,158 @@
+#!/usr/bin/env -S emacs -x
+;; Copyright (C) 2025 Augusto Stoffel  -*- lexical-binding: t; -*-
+
+;; This file is not part of GNU Emacs.
+
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; For a full copy of the GNU General Public License
+;; see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This script generates symbols.eld from the original TeX character
+;; name listing published by the AMS.
+
+;;; Code:
+
+(require 'subr-x)
+
+(defvar symbols)
+(defvar table-url "https://www.ams.org/STIX/bnb/stix-tbl.ascii-2006-10-20")
+(defvar aliases
+  '(("textslash" . "slash")                  ; /
+    ("textsubline" . "underbar")             ; ̲
+    ("S" . "section")                        ; §
+    ("P" . "paragraph")                      ; ¶
+    ("textonesuperior" . "supone")           ; ¹
+    ("texttwosuperior" . "suptwo")           ; ²
+    ("textthreesuperior" . "supthree")       ; ³
+    ("opbackslash" . "setminus")             ; ⧵
+    ("ntriangleright" . "nvartriangleright") ; ⋫
+    ("ntriangleleft" . "nvartriangleleft")   ; ⋪
+    ("textoverlaylongsolidus" . "notaccent") ; ̸
+    ("not" . "notaccent")                    ; ̸
+    ("hlineextender" . "harrowextender")     ; ⎯
+    ("dots" . "ellipsis")                    ; …
+    ("dh" . "eth")                           ; ð
+    ("colon" . "mathratio")                  ; ∶
+    ("textblank" . "blanksymbol")            ; ␢
+    ("ac" . "invlazys")                      ; ∾
+    ("&" . "ampersand")                      ; &
+    ("%" . "percent")                        ; %
+    ("#" . "octothorpe")                     ; #
+    ;; plain.tex aliases
+    ("geq" . "ge")
+    ("leftarrow" . "gets")
+    ("leq" . "le")
+    ("neg" . "lnot")
+    ("ni" . "owns")
+    ("rightarrow" . "to")
+    ("vee" . "lor")
+    ("wedge" . "land")
+    ))
+(defvar replacements
+  '(("slash" . "divslash")                             ; ∕
+    ("sansLmirrored" . "sansLturned")                  ; ⅂
+    ("sansLinverted" . "sansLmirrored")                ; ⅃
+    ("rightzigzagarrow" . "rightsquigarrow")           ; ⇝
+    ("rightwavyarrow" . "rightwavearrow")              ; ↝
+    ("overrightharpoondown" . "underrightharpoondown") ; ⃬
+    ("overleftharpoondown" . "underleftharpoondown")   ; ⃭
+    ("textoverlaysolidusv" . nil)                      ; ̸
+    ("textoverlaysolidusiv" . nil)                     ; ̸
+    ("textoverlaysolidusiii" . nil)                    ; ̸
+    ("textoverlaysolidusii" . nil)                     ; ̸
+    ("textoverlaysolidusi" . nil)                      ; ̸
+    ("overlaysolidusv" . nil)                          ; ̸
+    ("overlaysolidusiv" . nil)                         ; ̸
+    ("overlaysolidusiii" . nil)                        ; ̸
+    ("overlaysolidusii" . nil)                         ; ̸
+    ("overlaysolidusi" . nil)                          ; ̸
+    ("longrightzigzagarrow" . "longrightsquigarrow")   ; ⟿
+    ("longleftzigzagarrow" . "leftsquigarrow")         ; ⇜
+    ("leftzigzagarrow" . "leftsquigarrow")             ; ⇜
+    ("leftwavyarrow" . "leftwavearrow")                ; ↜
+    ("itvarphi" . "itphi")                             ; 𝜙
+    ("itphi" . "itvarphi")                             ; 𝜑
+    ("drbkarow" . "drbkarrow")                         ; ⤐
+    ("dbkarow" . "dbkarrow")                           ; ⤏
+    ("bfsansvarphi" . "bfsansphi")                     ; 𝞍
+    ("bfsansphi" . "bfsansvarphi")                     ; 𝞅
+    ("bfitvarphi" . "bfitphi")                         ; 𝝓
+    ("bfitsansvarphi" . "bfitsansphi")                 ; 𝟇
+    ("bfitsansphi" . "bfitsansvarphi")                 ; 𝞿
+    ("bfitphi" . "bfitvarphi")                         ; 𝝋
+    ))
+
+(unless (file-exists-p (file-name-nondirectory table-url))
+  (with-current-buffer
+      (url-retrieve-synchronously table-url)
+    (write-region nil nil (file-name-nondirectory table-url))))
+
+(defun field-content (start end)
+  (buffer-substring-no-properties (+ start -1 (point))
+                                  (+ end (point))))
+
+(with-temp-buffer
+  (insert-file-contents (file-name-nondirectory table-url))
+  (goto-char (point-min))
+  (re-search-forward "^  .*\n\n")
+  (let ((hash (make-hash-table :test #'equal)))
+    (while (not (eobp))
+      (let ((flag (field-content 1 1))
+            (code (field-content 2 6))
+            (tex (string-trim (field-content 85 109))))
+        (unless (or (string-empty-p tex)
+                    (string-prefix-p " " code)
+                    (gethash tex hash))
+          (puthash tex (string-to-number code 16) hash)))
+      (forward-line))
+    ;; Perform replacements
+    (pcase-dolist (`(,from . ,to) replacements)
+      (when to (puthash to (gethash from hash) hash)))
+    (pcase-dolist (`(,from . ,to) replacements)
+      (remhash from hash))
+    (message "Generated %s symbols excluding alises" (hash-table-count hash))
+    ;; Add aliases
+    (pcase-dolist (`(,from . ,to) aliases)
+      (puthash to (gethash from hash) hash))
+    (message "Generated %s symbols including alises" (hash-table-count hash))
+    ;; Make XXX an alias for upXXX, if XXX is a Greek letter and the
+    ;; short version didn't exist yet.
+    (dolist (tex (hash-table-keys hash))
+      (when (and (string-prefix-p "up" tex)
+                 (string-match-p "[Gg]" (category-set-mnemonics
+                                         (char-category-set (gethash tex hash)))))
+        (let ((short (string-remove-prefix "up" tex)))
+          (when (gethash short hash) (message "Skipping alias: %s" tex))
+          (unless (gethash short hash)
+            (puthash short (gethash tex hash) hash)))))
+    (message "Generated %s symbols including \\upXXX alises" (hash-table-count hash))
+    ;; Rename textXXX to XXX, if the short version didn't exist yet.
+    (dolist (long (hash-table-keys hash))
+      (when (string-prefix-p "text" long)
+        (let ((short (string-remove-prefix "text" long)))
+          (when (gethash short hash)
+            (if (not (eq (gethash long hash) (gethash short hash)))
+                (message "Skipping alias: %s" long)
+              (message "Removing alias: %s" long)
+              (remhash long hash)))
+          (unless (gethash short hash)
+            (puthash short (gethash long hash) hash)
+            (remhash long hash)))))
+    (message "Generated %s symbols including \\textXXX alises" (hash-table-count hash))
+    (setq symbols (mapcar (lambda (k) (cons k (gethash k hash)))
+                          (sort (hash-table-keys hash) :key #'downcase)))))
+
+(with-temp-file "symbols.eld"
+  (insert (format ";; Generated from %s" table-url))
+  (print symbols (current-buffer)))

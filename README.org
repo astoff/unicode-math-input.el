@@ -20,8 +20,11 @@ This Emacs package provides two methods to insert mathematical symbols:
   #+end_src
   to your init file or a mode hook, as desired.
 
-In either case, [[http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unimath-symbols.pdf][all symbols]] provided by the unicode-math LaTeX package
-are available, with the same names.
+In either case, 2910 different symbols (with 165 aliases, for a total
+of 3075 names) are available.  Those names are derived, with some
+additions and corrections, from the [[https://www.ams.org/STIX/][catalog]] developed Barbara Beeton
+at the AMS.  This is mostly compatible with (and slightly larger than)
+the [[http://mirrors.ctan.org/macros/unicodetex/latex/unicode-math/unimath-symbols.pdf][collection]] provided by the unicode-math LaTeX package.
 
 The =unicode-math= input method is similar to Emacs's built-in =TeX=,
 but it differs in a couple of ways.  First, it has a much larger
