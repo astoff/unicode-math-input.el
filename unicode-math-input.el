@@ -166,17 +166,28 @@ of symbols."
 Can also be used as an item in `completion-at-point-functions'."
   (interactive (list (completing-read "Insert math symbol: "
                                       (unicode-math-input--completion-table)
-  (if name
-      (insert (cdr (or (assoc name unicode-math-input-extra-symbols)
-                       (assoc name unicode-math-input-symbols)
-                       (user-error "No symbol named `%s'" name))))
-    (when (thing-at-point-looking-at
-           (rx (literal unicode-math-input-escape)
-               (group (+ (any "A-Z" "a-z")))))
-      `(,(match-beginning 1) ,(match-end 1)
-        ,(unicode-math-input--completion-table)
-        :exclusive no))))
                                       nil t nil 'unicode-math-input--history)))
+  (cond
+   (name
+    (insert (cdr (or (assoc name unicode-math-input-extra-symbols)
+                     (assoc name unicode-math-input-symbols)
+                     (user-error "No symbol named `%s'" name)))))
+   ((thing-at-point-looking-at
+     (rx (literal unicode-math-input-escape)
+         (group (+ (any "A-Z" "a-z")))))
+    `(,(match-beginning 1) ,(match-end 1)
+      ,(unicode-math-input--completion-table)
+      :exit-function
+      (lambda (string status)
+        (when-let* ((_ (eq status 'finished))
+                    (start (- (point) (length string)))
+                    (_ (equal (buffer-substring-no-properties start (point))
+                              string))
+                    (char (cdr (or (assoc string unicode-math-input-extra-symbols)
+                                   (assoc string unicode-math-input-symbols)))))
+          (delete-region (- start (length unicode-math-input-escape)) (point))
+          (insert char)))
+      :exclusive no))))
 
 (provide 'unicode-math-input)
 ;;; unicode-math-input.el ends here

@@ -12,9 +12,8 @@ This Emacs package provides two methods to insert mathematical symbols:
   name of a symbol with completion and inserts the corresponding
   Unicode character.
 
-- A completion-at-point backend.  This behaves differently in that it
-  allows you to complete the /name/ of a symbol rather than insert the
-  symbol itself.  To use it, add
+- A completion-at-point backend, where you type a symbol name to
+  insert the corresponding symbol.  To use it, add
   #+begin_src emacs-lisp
     (add-hook 'completion-at-point-functions 'unicode-math-input)
   #+end_src
