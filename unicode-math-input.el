@@ -54,6 +54,7 @@
 ;;; Code:
 
 (require 'quail)
+(require 'thingatpt)
 
 (defgroup unicode-math-input nil
   "Insert Unicode math symbols using TeX notation"
@@ -174,7 +175,8 @@ Can also be used as an item in `completion-at-point-functions'."
                      (user-error "No symbol named `%s'" name)))))
    ((thing-at-point-looking-at
      (rx (literal unicode-math-input-escape)
-         (group (+ (any "A-Z" "a-z")))))
+         (group (+ (any "A-Z" "a-z"))))
+     (max (- (point) (pos-bol)) (- (pos-eol) (point))))
     `(,(match-beginning 1) ,(match-end 1)
       ,(unicode-math-input--completion-table)
       :exit-function
