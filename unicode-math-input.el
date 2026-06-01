@@ -1,9 +1,9 @@
 ;;; unicode-math-input.el --- Insert Unicode math symbols using TeX notation -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2018, 2021 Augusto Stoffel
+;; Copyright (C) 2026 Augusto Stoffel
 
 ;; Author: Augusto Stoffel
-;; URL: https://github.com/astoff/unicode-math-input.el
+;; URL: https://codeberg.org/astoff/unicode-math-input.el
 ;; Package-Version: 0.1
 ;; Package-Requires: ((emacs "28.1"))
 
@@ -57,7 +57,7 @@
 
 (defgroup unicode-math-input nil
   "Insert Unicode math symbols using TeX notation"
-  :link '(url-link "https://github.com/astoff/unicode-math-input.el")
+  :link '(url-link "https://codeberg.org/astoff/unicode-math-input.el")
   :group 'convenience
   :group 'quail)
 
